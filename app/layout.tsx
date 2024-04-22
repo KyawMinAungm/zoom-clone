@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark,neobrutalism } from "@clerk/themes";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -15,8 +17,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <ClerkProvider appearance={{
+      baseTheme : dark ,
+      layout : {
+        logoImageUrl :'icons/logo.svg'
+      },
+      variables :{
+        colorPrimary : '#0E78F9',
+        colorBackground :'#1C1F2E',
+        colorInputBackground: '#252A41'
+      }
+    }
+    }>
     <html lang="en">
       <body className={`${outfit.className} bg-dark-2 `}>{children}</body>
     </html>
+    </ClerkProvider>
   );
 }

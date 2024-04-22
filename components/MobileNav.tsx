@@ -40,7 +40,7 @@ const MobileNav = () => {
                 <SheetClose   className="flex  flex-col pt-16 gap-4 h-full text-white">
                 {
                 sideBarLinks.map(link => { 
-                    const isActive = pathname === link.route 
+                    const isActive = pathname === link.route || pathname.startsWith(`${link.route}/`)
                     return(
                     <SheetClose asChild key={link.label}>
                         <Link  href={link.route} className={cn('flex justify-start p-4 rounded-lg w-full gap-4', {'bg-blue-1' : isActive})}  >
