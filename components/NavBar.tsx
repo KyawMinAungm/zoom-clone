@@ -8,7 +8,6 @@ const NavBar = () => {
   return (
     <nav className="flex bg-dark-1 justify-between w-full z-50 px-6 py-4 lg:px-10">
       <div className="flex ">
-        <MobileNav />
         <Link href="/" className="flex w-12 items-center gap-1">
           <Image src="/icons/logo.svg" width={32} height={32} alt="Zoom" />
           <p className="text-[26px] font-extrabold text-white max-sm:hidden">
@@ -16,10 +15,11 @@ const NavBar = () => {
           </p>
         </Link>
       </div>
-      <div className="flex ">
+      <div className="flex gap-3">
         <SignedIn>
         <UserButton />
         </SignedIn>
+        <MobileNav />
       </div>
     </nav>
   );

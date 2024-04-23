@@ -2,12 +2,61 @@
 import React, { useState } from "react";
 import HomeCard from "./HomeCard";
 import { useRouter } from "next/navigation";
+import MeetingModel from "./MeetingModel";
+import { useUser } from "@clerk/nextjs";
+import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
+import { useToast } from "@/components/ui/use-toast"
 
 const MeetingTypyeList = () => {
   const [meeting, setMeeting] = useState<
     "isSchdulingMeeting" | "isJoiningMeeting" | "isInstanceMeeting" | undefined
   >();
-  const router = useRouter()
+  const router = useRouter();
+  const user = useUser();
+  const client = useStreamVideoClient();
+  const [value, setValue] = useState({
+    dateTime: new Date(),
+    description: "",
+    link: "",
+  });
+  const [callDetail, setCallDetail] = useState<Call>();
+  const {toast} = useToast();
+  const createMeeting = async () => {
+    if (!user || !client) return;
+    try {
+      if (!value.dateTime) {
+        toast({
+          title : "Please select a date and time"
+      
+        })
+        return;
+      }
+      const id = crypto.randomUUID();
+      const call = client.call("default", id);
+      if (!call) throw new Error(" Fail to create call");
+      const startAt =
+        value.dateTime.toISOString() || new Date(Date.now()).toISOString();
+      const description = value.description || "Instance meeting";
+      await call.getOrCreate({
+        data: {
+          starts_at: startAt,
+          custom: {
+            description,
+          },
+        },
+      });
+      setCallDetail(call);
+      if (!value.description) {
+        router.push(`/meeting/${call.id}`)
+        toast({
+          title : "Meeting created"
+        })
+      }
+    } catch (error) {
+      console.log(error);
+      toast({title : "Failed to create meeting"})
+    }
+  };
   return (
     <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
       <HomeCard
@@ -36,7 +85,15 @@ const MeetingTypyeList = () => {
         iconUrl="icons/recordings.svg"
         title="View Recorndings"
         className="bg-yellow-1"
-        handleClick={() => router.push('/recordings')}
+        handleClick={() => router.push("/recordings")}
+      />
+      <MeetingModel
+        isOpen={meeting === "isInstanceMeeting"}
+        onClose={() => setMeeting(undefined)}
+        title="Start an instance meeting"
+        className="text-center"
+        buttonText="Start meeting"
+        handleClick={createMeeting}
       />
     </section>
   );
