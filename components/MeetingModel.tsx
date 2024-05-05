@@ -38,9 +38,9 @@ const MeetingModel = ({
   return (
     <Dialog open = {isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-dark-1 border-none w-full max-w-[520px] flex flex-col gap-6 px-6 py-9 text-white ">
-        <div className="flex flex-col gap-6 ">
+        <div className="flex flex-col  gap-6 ">
             {image &&  (
-                <div className="">
+                <div className="mx-auto">
                     <Image src={image} width={72} height={72} alt="image"/>
                 </div>
             )}

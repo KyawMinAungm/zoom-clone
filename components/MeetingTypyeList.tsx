@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import MeetingModel from "./MeetingModel";
 import { useUser } from "@clerk/nextjs";
 import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast";
+import { Textarea } from "./ui/textarea";
+import DatePicker from "react-datepicker";
 
 const MeetingTypyeList = () => {
   const [meeting, setMeeting] = useState<
@@ -20,15 +22,14 @@ const MeetingTypyeList = () => {
     link: "",
   });
   const [callDetail, setCallDetail] = useState<Call>();
-  const {toast} = useToast();
+  const { toast } = useToast();
   const createMeeting = async () => {
     if (!user || !client) return;
     try {
       if (!value.dateTime) {
         toast({
-          title : "Please select a date and time"
-      
-        })
+          title: "Please select a date and time",
+        });
         return;
       }
       const id = crypto.randomUUID();
@@ -47,14 +48,14 @@ const MeetingTypyeList = () => {
       });
       setCallDetail(call);
       if (!value.description) {
-        router.push(`/meeting/${call.id}`)
+        router.push(`/meeting/${call.id}`);
         toast({
-          title : "Meeting created"
-        })
+          title: "Meeting created",
+        });
       }
     } catch (error) {
       console.log(error);
-      toast({title : "Failed to create meeting"})
+      toast({ title: "Failed to create meeting" });
     }
   };
   return (
@@ -83,7 +84,7 @@ const MeetingTypyeList = () => {
       <HomeCard
         description="Meeting recordings"
         iconUrl="icons/recordings.svg"
-        title="View Recorndings"
+        title="View Recordings"
         className="bg-yellow-1"
         handleClick={() => router.push("/recordings")}
       />
@@ -95,6 +96,47 @@ const MeetingTypyeList = () => {
         buttonText="Start meeting"
         handleClick={createMeeting}
       />
+      {!callDetail ? (
+        <MeetingModel
+          isOpen={meeting === "isSchdulingMeeting"}
+          onClose={() => setMeeting(undefined)}
+          title="Schedule Meeting"
+          className="text-center"
+          buttonText="Create meeting"
+          handleClick={() => {            }}
+        >
+          <div className="flex flex-col  gap-2.5">
+            <label>Add a description </label>
+            <Textarea className="bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0 border-none " />
+          </div>
+          <div className="flex flex-col  gap-2.5">
+            <label>Select date and time </label>
+            <DatePicker
+              className="bg-dark-3 w-full rounded focus:outline-none p-2"
+              selected={value.dateTime}
+              showTimeSelect
+              timeIntervals={15}
+              dateFormat={"MMMM d, yyyy hh:mm  aa"}
+              onChange={(date) => {
+                setValue({ ...value, dateTime: date! });
+              }}
+            />
+          </div>
+        </MeetingModel>
+      ) : (
+        <MeetingModel
+          isOpen={meeting === "isSchdulingMeeting"}
+          onClose={() => setMeeting(undefined)}
+          title="Meeting Created"
+          className="text-center"
+          buttonText="Copy meeting link"
+          buttonIcon="/icons/copy.svg"
+          image="/icons/checked.svg"
+          handleClick={() => {
+            // navigator.clipboard.write
+          }}
+        />
+      )}
     </section>
   );
 };

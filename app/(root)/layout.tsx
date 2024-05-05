@@ -1,4 +1,3 @@
-import NavBar from "@/components/NavBar";
 import StreamVideoProvider from "@/providers/StreamClientProvider";
 import React from "react";
 
